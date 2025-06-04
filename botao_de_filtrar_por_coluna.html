@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="pt-BR">
+  <title>Lista de Processos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .table thead th {
+      background-color: #800000;
+      color: white;
+      position: relative;
+    }
+    .badge-status {
+      padding: 5px 10px;
+      border-radius: 15px;
+      color: white;
+    }
+    .badge-pendente { background-color: #ffc107; }
+    .badge-incluido { background-color: #28a745; }
+    .badge-julgado { background-color: #0d6efd; }
+    .badge-pautado { background-color: #dc3545; }
+    .badge-finalizado { background-color: #6c757d; }
+    .btn-dark {
+      background-color: #343a40 !important;
+      border: none;
+    }
+    .filter-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .filter-container .btn-group button {
+      margin-right: 5px;
+    }
+    .search-input {
+      position: relative;
+    }
+    .search-input input {
+      border-radius: 20px;
+      padding-left: 35px;
+    }
+    .search-input i {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      color: gray;
+    }
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 1050;
+      min-width: 220px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      padding: 15px;
+      display: none;
+    }
+    .filter-dropdown.show {
+      display: block;
+    }
+    .filter-dropdown label {
+      color: black; /* Definindo a cor do texto como preta */
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5 bg-white p-4 rounded shadow">
+  <div class="filter-container">
+    <h4>Processos</h4>
+    <div class="btn-group">
+      <button class="btn btn-sm btn-secondary">Incluir em Sessão</button>
+      <button class="btn btn-sm btn-secondary">Retirar de Sessão</button>
+    </div>
+    <div class="d-flex align-items-center position-relative">
+      <button class="btn btn-light"><i class="fas fa-filter"></i> FILTRAR</button>
+      <div class="search-input ms-3">
+        <input type="text" class="form-control form-control-sm" placeholder="pesquisar processo">
+        <i class="fas fa-search"></i>
+      </div>
+    </div>
+  </div>
+  <table class="table table-bordered align-middle">
+    <thead>
+      <tr>
+        <th><input type="checkbox"></th>
+        <th>Processo <i class="fas fa-sort" onclick="sortTable(1)"></i></th>
+        <th>Matéria <i class="fas fa-filter filter-icon" onclick="toggleDropdown('materia')"></i>
+          <div id="dropdown-materia" class="filter-dropdown">
+            <strong>Matéria</strong>
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="materia1">
+              <label class="form-check-label" for="materia1">Administrativa</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="materia2">
+              <label class="form-check-label" for="materia2">Judicial</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="materia3">
+              <label class="form-check-label" for="materia3">Extra-Judicial</label>
+            </div>
+            <button class="btn btn-sm btn-aplicar mt-2">✔ Aplicar</button>
+          </div>
+        </th>
+        <th>Objeto</th>
+        <th>Recebido em <i class="fas fa-sort" onclick="sortTable(4)"></i></th>
+        <th>Situação <i class="fas fa-filter filter-icon" onclick="toggleDropdown('situacao')"></i>
+          <div id="dropdown-situacao" class="filter-dropdown">
+            <strong>Situação</strong>
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="sit1">
+              <label class="form-check-label" for="sit1">Pendente</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="sit2">
+              <label class="form-check-label" for="sit2">Incluído</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="sit3">
+              <label class="form-check-label" for="sit3">Julgado</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="sit4">
+              <label class="form-check-label" for="sit4">Pautado</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="sit5">
+              <label class="form-check-label" for="sit5">Finalizado</label>
+            </div>
+            <button class="btn btn-sm btn-aplicar mt-2">✔ Aplicar</button>
+          </div>
+        </th>
+        <th>Relator <i class="fas fa-filter filter-icon" onclick="toggleDropdown('relator')"></i>
+          <div id="dropdown-relator" class="filter-dropdown">
+            <strong>Relator</strong>
+            <input type="text" class="form-control form-control-sm search-input" placeholder="Buscar...">
+            <div class="filter-scroll">
+              <div class="form-check"><input class="form-check-input" type="checkbox" id="rel1"><label class="form-check-label" for="rel1"> Alice Souza</label></div>
+              <div class="form-check"><input class="form-check-input" type="checkbox" id="rel2"><label class="form-check-label" for="rel2"> Bruno Lima</label></div>
+              <!-- Add more options as needed -->
+            </div>
+            <button class="btn btn-sm btn-aplicar mt-2">✔ Aplicar</button>
+          </div>
+        </th>
+        <th>Decisão <i class="fas fa-filter filter-icon" onclick="toggleDropdown('decisao')"></i>
+          <div id="dropdown-decisao" class="filter-dropdown">
+            <strong>Decisão</strong>
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="dec1">
+              <label class="form-check-label" for="dec1">Homologado</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="dec2">
+              <label class="form-check-label" for="dec2">Não Homologado</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="dec3">
+              <label class="form-check-label" for="dec3">-</label>
+            </div>
+            <button class="btn btn-sm btn-aplicar mt-2">✔ Aplicar</button>
+          </div>
+        </th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="checkbox"></td>
+        <td>123456789</td>
+        <td>Administrativa</td>
+        <td>ANPC</td>
+        <td>20/01/2024</td>
+        <td><span class="badge badge-status badge-pendente">Pendente</span></td>
+        <td>George Washington</td>
+        <td>-</td>
+        <td><button class="btn btn-dark btn-sm">Visualizar</button></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox"></td>
+        <td>321321321</td>
+        <td>Extra-Judicial</td>
+        <td>TAC</td>
+        <td>20/01/2024</td>
+        <td><span class="badge badge-status badge-incluido">Incluído</span></td>
+        <td>Nelson Mandela</td>
+        <td>-</td>
+        <td><button class="btn btn-dark btn-sm">Visualizar</button></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox"></td>
+        <td>12112022</td>
+        <td>Judicial</td>
+        <td>Recurso</td>
+        <td>20/01/2024</td>
+        <td><span class="badge badge-status badge-julgado">Julgado</span></td>
+        <td>Getúlio Vargas</td>
+        <td>Homologado</td>
+        <td><button class="btn btn-dark btn-sm">Visualizar</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    toggleDropdown = (id) => {
+      const dropdown = document.getElementById(`dropdown-${id}`);
+      document.querySelectorAll('.filter-dropdown').forEach(d => {
+        if (d !== dropdown) d.classList.remove('show');
+      });
+      dropdown.classList.toggle('show');
+    };
+
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.filter-dropdown') && !e.target.classList.contains('filter-icon')) {
+        document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+      }
+    });
+
+    document.querySelectorAll('.btn-aplicar').forEach(button => {
+      button.addEventListener('click', applyFilters);
+    });
+
+    function applyFilters() {
+      const filters = {
+        materia: [],
+        situacao: [],
+        relator: [],
+        decisao: []
+      };
+
+      document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        dropdown.querySelectorAll('input[type=checkbox]').forEach(checkbox => {
+          if (checkbox.checked) {
+            const name = checkbox.closest('.filter-dropdown').id.replace('dropdown-', '');
+            filters[name].push(checkbox.nextElementSibling.innerText.trim());
+          }
+        });
+      });
+
+      filterTable(filters);
+    }
+
+    function filterTable(filters) {
+      const tableRows = document.querySelectorAll('tbody tr');
+      tableRows.forEach(row => {
+        const [
+          _,
+          __,
+          materia,
+          ____,
+          _____,
+          situacao,
+          relator,
+          decisao
+        ] = row.children;
+
+        const statusText = situacao.querySelector('.badge').innerText.trim().toLowerCase();
+        const showRow =
+          (!filters.materia.length || filters.materia.includes(materia.innerText.trim())) &&
+          (!filters.situacao.length || filters.situacao.includes(statusText)) &&
+          (!filters.relator.length || filters.relator.some(r => relator.innerText.includes(r))) &&
+          (!filters.decisao.length || filters.decisao.includes(decisao.innerText.trim()));
+
+        row.style.display = showRow ? '' : 'none';
+      });
+    }
+    
+    function sortTable(colIndex) {
+      const table = document.querySelector('tbody');
+      const rowsArray = Array.from(table.rows);
+      const isAscending = table.getAttribute('data-sort-dir') === 'asc';
+
+      rowsArray.sort((a, b) => {
+        const cellA = a.cells[colIndex].innerText;
+        const cellB = b.cells[colIndex].innerText;
+        return cellA.localeCompare(cellB);
+      });
+
+      if (!isAscending) {
+        rowsArray.reverse();
+      }
+
+      rowsArray.forEach(row => table.appendChild(row));
+      table.setAttribute('data-sort-dir', isAscending ? 'desc' : 'asc');
+    }
+  });
+</script>
+</body>
+</html>
