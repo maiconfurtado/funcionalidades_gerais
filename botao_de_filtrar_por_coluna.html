@@ -70,6 +70,10 @@
     .filter-dropdown label {
       color: black; /* Definindo a cor do texto como preta */
     }
+    .filter-scroll {
+      max-height: 150px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -214,6 +218,24 @@
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    let searchTerm = '';
+
+    const globalSearch = document.querySelector('.filter-container .search-input input');
+    globalSearch.addEventListener('input', e => {
+      searchTerm = e.target.value.toLowerCase();
+      applyFilters();
+    });
+
+    const relatorSearch = document.querySelector('#dropdown-relator input.search-input');
+    if (relatorSearch) {
+      relatorSearch.addEventListener('input', e => {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('#dropdown-relator .form-check').forEach(check => {
+          const label = check.querySelector('label').innerText.toLowerCase();
+          check.style.display = label.includes(term) ? '' : 'none';
+        });
+      });
+    }
     toggleDropdown = (id) => {
       const dropdown = document.getElementById(`dropdown-${id}`);
       document.querySelectorAll('.filter-dropdown').forEach(d => {
@@ -267,7 +289,10 @@
         ] = row.children;
 
         const statusText = situacao.querySelector('.badge').innerText.trim().toLowerCase();
+        const rowText = row.innerText.toLowerCase();
+        const matchesSearch = !searchTerm || rowText.includes(searchTerm);
         const showRow =
+          matchesSearch &&
           (!filters.materia.length || filters.materia.includes(materia.innerText.trim())) &&
           (!filters.situacao.length || filters.situacao.includes(statusText)) &&
           (!filters.relator.length || filters.relator.some(r => relator.innerText.includes(r))) &&
